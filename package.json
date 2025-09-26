@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run electron\"",
     "electron": "cross-env NODE_ENV=development electron .",
-    "build": "npm run build --prefix frontend && electron-builder"
+    "electron:dev": "npm run rebuild && cross-env NODE_ENV=development electron .",
+    "build": "npm run build --prefix frontend && cross-env NODE_ENV=production electron-builder",
+    "rebuild": "electron-rebuild",
+    "postinstall": "electron-builder install-app-deps",
+    "clean": "rm -rf node_modules dist && npm install"
   },
   "keywords": [],
   "author": "",
@@ -15,10 +19,48 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
-    "electron": "^38.1.0",
-    "electron-builder": "^26.0.12"
+    "electron": "28.3.3",
+    "electron-builder": "25.1.8"
   },
   "dependencies": {
-    "better-sqlite3": "^12.2.0"
+    "axios": "^1.12.1",
+    "better-sqlite3": "^12.2.0",
+    "puppeteer": "^24.20.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "build": {
+    "appId": "com.haidesen.app",
+    "productName": "haidesen",
+    "mac": {
+        "icon": "build/icon.icns",
+        "category": "public.app-category.productivity",
+      "target": "dmg"
+    },
+    "win": {
+        "target": "nsis"
+      },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "package.json",
+      "!electron/myProfile",
+      "!node_modules/*/{test,__tests__,tests}/",
+      "!electron/node_modules/*/{test,__tests__,tests}/",
+      "!**/*.map",       
+      "!**/*.log",       
+      "!**/*.md",       
+      "!.gitignore",
+      "!.editorconfig",
+      "!.vscode",
+      "!.idea",
+      "!*.yml",
+      "!*.yaml"
+    ],
+    "asar": true,
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    }
   }
 }

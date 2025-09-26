@@ -1,2 +1,8 @@
 node_modules/
 dist/
+node_modules
+myProfile/
+release/
+cookies.json
+frontend/src/App copy.jsx
+resources/
