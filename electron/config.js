@@ -110,8 +110,12 @@ const RESUME_JSON_TEMP = {
     ]
   };
 
+const base_url = process.env.NODE_ENV === "development" ? 'http://127.0.0.1:8000' : 'https://hds.sundayong.top'
+
+
 
   module.exports = {
-    RESUME_JSON_TEMP
+    RESUME_JSON_TEMP,
+    base_url
 };
 

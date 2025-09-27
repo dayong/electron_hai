@@ -2,14 +2,14 @@ const fs = require("fs");
 const axios = require("axios");
 const path = require("path")
 const os = require("os")
+const { base_url } = require("./config");
 
 
 async function case_parsed_resume_json_handle(resume_json){
     // console.log('handles.js',resume_json)
     try{
         const response = await axios.post(
-            // "http://127.0.0.1:8000/resume/create_resume",
-            "https://hds.sundayong.top/resume/create_resume",
+            `${base_url}/resume/create_resume`,
              resume_json,
              { responseType: "arraybuffer" }
              );

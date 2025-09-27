@@ -7,6 +7,8 @@ const fs = require("fs");
 
 const { add_task, insertMany, get_resumes, start_task ,del_resume} = require("./db");
 
+const { base_url } = require("./config");
+
 const {
     doubao_parser,
     doubao_qrcode_refresh,
@@ -143,8 +145,7 @@ ipcMain.handle("select-pdf", async () => {
 
     // 发到服务提取text
     const res = await axios.post(
-        // "http://127.0.0.1:8000/resume/parse_resume_from_electron",
-        "https://hds.sundayong.top/resume/parse_resume_from_electron",
+        `${base_url}/resume/parse_resume_from_electron`,
         form,
         {
             headers: {...form.getHeaders(),}

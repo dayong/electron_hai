@@ -3,10 +3,9 @@ const fs = require("fs");
 const axios = require("axios");
 const FormData = require("form-data");
 const path = require("path");
-
 const { app } = require("electron");
 
-
+const { base_url } = require("./config");
 
 
 function getDatabasePath() {
@@ -184,7 +183,7 @@ async function uploadFile(task) {
       const form = new FormData();
       form.append("file", fs.createReadStream(task.file_path));
   
-      let result = await axios.post("http://127.0.0.1:8000/resume/parse_resume_from_electron", form, {
+      let result = await axios.post(`${base_url}/resume/parse_resume_from_electron`, form, {
         headers: form.getHeaders(),
       });
 
