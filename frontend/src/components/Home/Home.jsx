@@ -57,6 +57,11 @@ function Home() {
             window.api.send("message-to-main", {data:navigator.onLine, case: 'case_navigator_online'});
         }
 
+        const from_main_log = (...arg) => {
+            console.log('======= 来自main log =========')
+            console.log(arg)
+        }
+
 
           // 监听
           window.api.on("message-from-main_doubao_login_status", handleStatus);
@@ -65,11 +70,15 @@ function Home() {
 
           window.api.on("from_main_navigator_online", is_navigator_online);
 
+
+          window.api.on("from_main_log", from_main_log);
+
           // 卸载时清理监听器
           return () => {
               // 卸载时清理
             window.api.off("message-from-main_doubao_login_status");
             window.api.off("from_main_parsed_resume");
+            window.api.off("from_main_log");
           };
 
     }, []);

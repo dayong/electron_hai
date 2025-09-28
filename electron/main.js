@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow,globalShortcut, ipcMain, dialog } = require("electron");
 const path = require("path");
 
 const axios = require("axios");
@@ -51,7 +51,14 @@ function createWindow() {
         win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
     }
 
-    win.webContents.openDevTools();
+    // 注册全局快捷键：Ctrl+Shift+I 打开 DevTools
+    globalShortcut.register('CommandOrControl+Shift+I', () => {
+        if (win && win.webContents) {
+            win.webContents.openDevTools({ mode: 'detach' })
+        }
+    });
+
+    // win.webContents.openDevTools();
 
     
 
@@ -70,6 +77,9 @@ function createWindow() {
                 // 关闭puppeteer浏览器
                 case "case_close_puppeteer":
                     console.log("main 关闭浏览器");
+                    if(obj && obj.timer){
+                        clearInterval(obj.timer)
+                    }
                     await close();
                     break;
                 //拿到网络状态后，自动同步 ，断点续传
@@ -105,6 +115,8 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
 });
+
+
 
 // 定义方法
 
@@ -143,6 +155,8 @@ ipcMain.handle("select-pdf", async () => {
 
     form.append("file", fs.createReadStream(filePath));
 
+    win.webContents.send("from_main_log", '发到服务提取text')
+
     // 发到服务提取text
     const res = await axios.post(
         `${base_url}/resume/parse_resume_from_electron`,
@@ -152,13 +166,16 @@ ipcMain.handle("select-pdf", async () => {
         }
     );
 
+
+
+    win.webContents.send("from_main_log", res.data)
+
     console.log('发到服务提取text', res);
 
+    
     if (res && res.data) {
         let { text, name, cell } = res.data;
 
-
-        console.log(res.data)
 
         // return;
 
@@ -169,7 +186,17 @@ ipcMain.handle("select-pdf", async () => {
             data: reply   //html 文本
         }
         */
+       win.webContents.send("from_main_log", {'msg':"doubao_parser"})
+
+       try{
         result = await doubao_parser(text);
+       }catch(e){
+        win.webContents.send("from_main_log", {'msg':"doubao_parser error"})
+       }
+
+       win.webContents.send("from_main_log", {'msg':"doubao_parser result", 'result':result})
+
+        
 
         doubao_status(win);
         console.log("解析简历=================>>>>>>>>", result);
@@ -272,4 +299,9 @@ const userDataPath = process.env.NODE_ENV === "development"
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") app.quit();
+});
+
+// 退出时注销快捷键
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll()
 });
