@@ -2,8 +2,10 @@ name: Build Electron App
 
 on:
   push:
-    tags:
-      - 'v*.*.*'   # 例如 v1.0.0 时触发
+    branches:
+      - main   # 触发条件：推送到 main 分支
+    # tags:
+      # - 'v*.*.*'   # 例如 v1.0.0 时触发
   workflow_dispatch: # 允许手动触发
 
 jobs:
@@ -30,4 +32,3 @@ jobs:
         with:
           name: windows-build
           path: dist/*
-
