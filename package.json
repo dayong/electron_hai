@@ -8,7 +8,7 @@
     "electron": "cross-env NODE_ENV=development electron .",
     "electron:dev": "npm run rebuild && cross-env NODE_ENV=development electron .",
     "build": "npm run build --prefix frontend && cross-env NODE_ENV=production electron-builder",
-    "build:win": "cross-env NODE_ENV=production electron-builder --win",
+    "build:win": "cross-env NODE_ENV=production electron-builder --win --publish never",
     "rebuild": "electron-rebuild",
     "postinstall": "electron-builder install-app-deps",
     "clean": "rm -rf node_modules dist && npm install"
