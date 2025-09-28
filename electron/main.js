@@ -195,10 +195,10 @@ ipcMain.handle("select-pdf", async () => {
        }
 
        win.webContents.send("from_main_log", {'msg':"doubao_parser result", 'result':result})
-
         
 
         doubao_status(win);
+        
         console.log("解析简历=================>>>>>>>>", result);
         if(result.data && result.status && result.status == 2){
             result.name = name
