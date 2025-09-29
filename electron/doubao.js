@@ -212,22 +212,25 @@ if (process.env.NODE_ENV === "development") {
 async function doubao_parser(resume_text){
     console.log('doubao_parser开始。。。')
 
-    const executablePath = puppeteer.executablePath();
+    // const executablePath = puppeteer.executablePath();
 
-    console.log('executablePath', executablePath)
+//     const executablePath = process.env.NODE_ENV === "development" ? path.resolve(__dirname, '../node_modules/.bin/electron')
+//   : process.execPath;
 
     try{
         // 启动浏览器
   browser = browser || (await puppeteer.launch({
     headless: false, // 打开可见浏览器方便调试
     userDataDir: userDataDir, // 保存用户数据目录
-    executablePath: executablePath,
+    // executablePath: executablePath,
     args: [
       "--disable-blink-features=AutomationControlled",
       "--no-sandbox",
       "--disable-setuid-sandbox"
     ]
   }));
+
+  console.log('实际使用的浏览器路径:', browser.process().spawnfile);
 
   page = page || (await browser.newPage());
 
@@ -405,7 +408,8 @@ async function doubao_parser(resume_text){
 
   return {
       status: 2,  //2 是拿到了解析后的html
-      data: reply   //html 文本
+      data: reply,   //html 文本
+      url: browser.process().spawnfile
   };
 
   console.log("🤖 DeepSeek 回复：", reply);
