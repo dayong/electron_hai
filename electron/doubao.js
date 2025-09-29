@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const { app } = require("electron");
+// const findChrome = require('chrome-finder')
 
 const { RESUME_JSON_TEMP }  = require('./config')
 
@@ -211,10 +212,8 @@ if (process.env.NODE_ENV === "development") {
 
 async function doubao_parser(resume_text){
     console.log('doubao_parser开始。。。')
-
-    const executablePath = puppeteer.executablePath();
-
-    console.log('executablePath', executablePath)
+    
+    const executablePath = path.resolve(process.resourcesPath, 'chromium/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing')
 
     try{
         // 启动浏览器
@@ -228,6 +227,8 @@ async function doubao_parser(resume_text){
       "--disable-setuid-sandbox"
     ]
   }));
+
+  console.log('实际使用的浏览器路径:', browser.process().spawnfile, puppeteer.executablePath());
 
   page = page || (await browser.newPage());
 
@@ -405,7 +406,8 @@ async function doubao_parser(resume_text){
 
   return {
       status: 2,  //2 是拿到了解析后的html
-      data: reply   //html 文本
+      data: reply,   //html 文本
+      url: browser.process().spawnfile
   };
 
   console.log("🤖 DeepSeek 回复：", reply);

@@ -51,6 +51,7 @@ function createWindow() {
         win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
     }
 
+
     // 注册全局快捷键：Ctrl+Shift+I 打开 DevTools
     globalShortcut.register('CommandOrControl+Shift+I', () => {
         if (win && win.webContents) {
@@ -155,7 +156,7 @@ ipcMain.handle("select-pdf", async () => {
 
     form.append("file", fs.createReadStream(filePath));
 
-    win.webContents.send("from_main_log", '发到服务提取text')
+    win.webContents.send("from_main_log", {'adfadsfasdf':process.execPath})
 
     // 发到服务提取text
     const res = await axios.post(
@@ -166,7 +167,7 @@ ipcMain.handle("select-pdf", async () => {
         }
     );
 
-
+        
 
     win.webContents.send("from_main_log", res.data)
 

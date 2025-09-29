@@ -34,14 +34,13 @@
     "appId": "com.haidesen.app",
     "productName": "haidesen",
     "mac": {
-        "icon": "build/icon.icns",
-        "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "category": "public.app-category.productivity",
       "target": "dmg"
     },
     "win": {
-        "icon": "build/icon.icns",
-        "target": "nsis"
-      },
+      "target": "nsis"
+    },
     "files": [
       "electron/**/*",
       "frontend/dist/**/*",
@@ -49,9 +48,9 @@
       "!electron/myProfile",
       "!node_modules/*/{test,__tests__,tests}/",
       "!electron/node_modules/*/{test,__tests__,tests}/",
-      "!**/*.map",       
-      "!**/*.log",       
-      "!**/*.md",       
+      "!**/*.map",
+      "!**/*.log",
+      "!**/*.md",
       "!.gitignore",
       "!.editorconfig",
       "!.vscode",
@@ -63,6 +62,13 @@
     "directories": {
       "buildResources": "assets",
       "output": "release"
-    }
+    },
+    "extraResources": [
+        {
+          "from": "~/.cache/puppeteer/chrome/mac-140.0.7339.82/chrome-mac-x64/",
+          "to": "chromium"
+        }
+      ]
+      
   }
 }
