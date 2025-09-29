@@ -159,10 +159,18 @@ function Home() {
 
                 let json_str = del_html(data);
 
-                let resume_json = JSON.parse(json_str);
+                
+                try{
+                    let resume_json = JSON.parse(json_str);
+                    window.api.send("message-to-main", {data:resume_json, case: 'case_parsed_resume_json'});
+                }catch(e){
+                    console.log('解析格式有误')
+                    window.api.send("message-to-main", {data:'解析格式有误', case: 'case_parsed_resume_json'});
+                }
+                
 
                 // 拿到解析后的json str 发到main
-                window.api.send("message-to-main", {data:resume_json, case: 'case_parsed_resume_json'});
+                
 
  
             }

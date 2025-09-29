@@ -212,15 +212,13 @@ if (process.env.NODE_ENV === "development") {
 
 async function doubao_parser(resume_text){
     console.log('doubao_parser开始。。。')
-    
-    const executablePath = path.resolve(process.resourcesPath, 'chromium/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing')
+
 
     try{
         // 启动浏览器
   browser = browser || (await puppeteer.launch({
     headless: false, // 打开可见浏览器方便调试
     userDataDir: userDataDir, // 保存用户数据目录
-    executablePath: executablePath,
     args: [
       "--disable-blink-features=AutomationControlled",
       "--no-sandbox",
@@ -228,7 +226,6 @@ async function doubao_parser(resume_text){
     ]
   }));
 
-  console.log('实际使用的浏览器路径:', browser.process().spawnfile, puppeteer.executablePath());
 
   page = page || (await browser.newPage());
 
