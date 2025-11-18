@@ -143,9 +143,11 @@ function del_resume(id){
       }
 }
 
+// 撞库
+
 
 function get_resumes(resume_params) {
-    console.log('get_resumes', resume_params)
+    // console.log('get_resumes', resume_params)
     let {page, pageSize, keys} = resume_params;
 
     const offset = (page - 1) * pageSize;
@@ -171,20 +173,28 @@ function get_resumes(resume_params) {
 
     const total = result.count;
 
-    console.log('total', total, rows);
+    // console.log('total', total, rows);
   
     return { data: rows, total, page};
   }
 
 
-async function uploadFile(task) {
-    console.log('开始上传....')
+async function uploadFile(task, token = '') {
+    console.log('开始上传....', token)
+    
+
     try {
       const form = new FormData();
       form.append("file", fs.createReadStream(task.file_path));
+      form.append("path", task.file_path);
+
+      let header = form.getHeaders()
   
       let result = await axios.post(`${base_url}/resume/parse_resume_from_electron`, form, {
-        headers: form.getHeaders(),
+        headers: {
+            'Authorization': `${token}`,
+            ...header
+        }
       });
 
       console.log('同步后返回', result.data)
@@ -192,34 +202,47 @@ async function uploadFile(task) {
         result = result.data;
       }
 
-      db.prepare("UPDATE list SET status = ?,name = ?,phone=?,resume_text = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run("success",result.name, result.cell,result.source_text, task.id);
+      db.prepare("UPDATE list SET status = ?,server_id = ?,name = ?,phone=?,resume_text = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run("success",result._id, result.name, result.cell,result.source_text, task.id);
       
       console.log("✅ 上传成功:", task.file_path);
       return {success:true}
-    } catch (err) {
-      console.log("❌ 上传失败，稍后重试:", task.file_path, err.message);
+    } catch (error) {
+      console.log("❌ 上传失败，稍后重试:", task.file_path);
+        if(error.response){
+            const errorData = error.response.data;
+            // 重复
+            if (errorData.detail && errorData.detail.status === 1) {
+                const { msg, name, cell, source_text, email, _id } = errorData.detail;
+
+                console.log(216, msg, name, cell, source_text, email)
+
+                db.prepare("UPDATE list SET status = ?,server_id = ?,name = ?,phone=?,resume_text = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run("success", _id, name, cell, source_text, task.id);
+                return {success:true}
+            }
+        }
+
       return {success:false}
     }
   }
   
   // 扫描任务
-  async function processPendingUploads() {
+  async function processPendingUploads(token = '') {
     console.log('processPendingUploads');
     const rows = db.prepare("SELECT * FROM list WHERE status = 'pending'").all();
     
     
       if (rows && rows.length) {
         for (let task of rows) {
-          await uploadFile(task);
+          await uploadFile(task, token);
         }
       }
     
   }
 
-function start_task(is_online){
-      console.log('start_task',is_online)
+function start_task(is_online, token){
+      console.log('start_task',is_online, token)
         if (is_online) { // Electron/浏览器里可用，Node 里用 ping
-            processPendingUploads();
+            processPendingUploads(token);
         } else {
             console.log("🚫 当前无网络，等待重试...");
         }

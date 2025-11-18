@@ -1,12 +1,25 @@
 import React, { useState, useEffect }  from 'react';
-import { Space, Table, Input, Button, Popconfirm, message } from 'antd';
+import { Space, Table, Input, Button, Popconfirm, message, Modal, Select, Radio, Grid, Col, Row, List } from 'antd';
+
 import { SearchOutlined } from '@ant-design/icons';
+
+import axios from "axios";
+
 
 
 function App() {
-    const [resumes, setResumes] = useState([]);
+    const [open, setOpen] = useState(false);
+
     const [loading, setLoading] = useState(false);
+
+    const [resumes, setResumes] = useState([]);
+
+    const [positions, setPositions] = useState([]);
+
     const [str, setStr] = useState('');
+
+    const [resume_id, set_resume_id] = useState('');
+
     const [pagination, setPagination] = useState({
         page: 1,
         pageSize: 10,
@@ -15,10 +28,22 @@ function App() {
 
     const [filters, setFilters] = useState({});
 
+    const [currentPdf, setCurrentPdf] = useState('');
+
     const [messageApi, contextHolder] = message.useMessage();
     const info = (msg) => {
         messageApi.info(msg);
     };
+
+
+    const showLoading = () => {
+        setOpen(true);
+        setLoading(true);
+        // Simple loading mock. You should add cleanup logic in real world.
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      };
 
 
     const columns = [
@@ -62,16 +87,16 @@ function App() {
         dataIndex: 'is_parse',
         key: 'is_parse',
       },
-      {
-          title: '简介',
-          dataIndex: 'resume_text',
-          key: 'resume_text',
-          render: function(_, record){
-            return (
-                <div>{_ && _.substring(0,100)}</div>
-            )
-          }
-      },
+    //   {
+    //       title: '简介',
+    //       dataIndex: 'resume_text',
+    //       key: 'resume_text',
+    //       render: function(_, record){
+    //         return (
+    //             <div>{_ && _.substring(0,100)}</div>
+    //         )
+    //       }
+    //   },
       {
           title: '导入时间',
           dataIndex: 'created_at',
@@ -90,11 +115,11 @@ function App() {
             cancelText="取消"
           >
             <Button danger size="small">
-                移除
+                ...
             </Button>
           </Popconfirm>
-          <Button danger size="small">
-                加入看板
+          <Button danger type="link" size="small" onClick={() => handleView(record)}>
+                详细
             </Button>
           </Space>
         ),
@@ -156,11 +181,145 @@ function App() {
         setFilters(newFilters);
       }
 
+      const renderList = async function(id = ''){
+        console.log('resume_id', id)
+        var f_resume_id = id || resume_id;
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
 
+        setPositions([])
+
+        
+        try {
+            let res = await axios.get(
+                "http://127.0.0.1:8000/member/find_position",
+                {
+                    params: {
+                        'use_owner_id': true
+                    },  // 查询参数放在这里
+                    headers: {
+                        'Authorization': `${token}`
+                    }
+                }
+            );
+
+            console.log(210,resume_id, res.data);
+
+            res.data.list.forEach(function(item, index){
+                
+                var company = item.company_id.split('|')[1];
+                console.log(23123123, company)
+
+                res.data.list[index]['company'] = company;
+
+                if(item.resumes && Array.isArray(item.resumes)){
+                    var isExceting = item.resumes.some((resume)=>{
+                        return resume.id == f_resume_id;
+                    }); 
+                    if(isExceting){
+                        res.data.list[index]['isExceting'] = true
+                    }
+                }
+            });
+
+            console.log(237, res.data.list)
+
+            setPositions(res.data.list);
+
+        
+
+        } catch (err) {
+        
+        console.error('获取雇员列表失败:', err);
+        } finally {
+            setLoading(false);
+        }
+      }
+
+      const handleView = async function(record){
+            // console.log(1751, record)
+            const {server_id }= record;
+
+            console.log(188, server_id)
+
+            set_resume_id(server_id);
+
+            // var result = await window.api.readPdfFile(record.file_path);
+            const base64Data = await window.api.readPdfFile(record.file_path);
+            // console.log(180, base64Data)
+            const blob = new Blob([Uint8Array.from(atob(base64Data), c => c.charCodeAt(0))], { type: "application/pdf" });
+            const url = URL.createObjectURL(blob);
+            // document.querySelector("#pdfViewer").src = url;
+
+            console.log(183, url)
+
+
+            renderList(server_id)
+
+
+
+
+
+
+            setCurrentPdf(url);
+            setOpen(true);
+      }
+
+      const intoItem = async function(item){
+            console.log(item, resume_id)
+            addItemToCompany({
+                item_id: item._id,
+                resume_id
+            })
+      }
+
+     
+
+
+
+      const addItemToCompany = async (params) => {
+        console.log('addItemToCompany', params)
+
+        const { item_id, resume_id} = params;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        
+        try {
+            let res = await axios.post(
+                "http://127.0.0.1:8000/member/add_resume_to_company",
+                {item_id, resume_id},
+                {
+                    headers: {
+                        'Authorization': `${token}`
+                    }
+                }
+            );
+
+          console.log(263, res.data)
+
+          renderList()
+
+
+        } catch (err) {
+            console.error('添加失败:', err);
+        } finally {
+            setLoading(false);
+        }
+      };
+
+   
       
     
 
-      
+      const style = { background: '#0092ff', padding: '8px 0' };
 
       
 
@@ -183,6 +342,63 @@ function App() {
         </div>
  
         <Table loading={loading} rowKey="id" columns={columns} dataSource={resumes} pagination={{...pagination,showQuickJumper: true, onChange:handleTableChange}} />
+
+
+        <Modal width="95%" height="80%"
+        title={<p>{resume_id}</p>}
+        footer={
+          <Button type="primary" onClick={showLoading}>
+            Reload
+          </Button>
+        }
+        loading={loading}
+        open={open}
+        onCancel={() => setOpen(false)}>
+        
+
+        <div>
+        <Row gutter={16}>
+            <Col className="gutter-row" span={12}>
+                <div style={style}>
+                    <embed src={currentPdf}  id="pdfViewer" type="application/pdf" width="100%" height="600px" />
+                </div>
+            </Col>
+            <Col className="gutter-row" span={12}>
+            <div>
+                <h3>项目信息</h3>
+                <List
+                    itemLayout="horizontal"
+                    dataSource={positions}
+                    renderItem={(item, index) => (
+                    <List.Item>
+                        <List.Item.Meta
+                        title={<div><a href="">{'职位:' + item.name+' | 需求人数: '+item.count +' | '+ item.company}</a><br />
+                        
+                        {item.isExceting ? '当前简历已加入' : (<Button type="primary" size="small" onClick={() => intoItem(item)}>
+                        ->简历加入到该项目
+                        </Button>)
+                    }
+                      
+                      </div>}
+                        description=""
+                        />
+                    </List.Item>
+                    )}
+                />
+            </div>
+            </Col>
+        </Row>
+            
+        </div>
+
+        
+
+        
+
+        
+
+
+      </Modal>
        </div>
       )
 }
