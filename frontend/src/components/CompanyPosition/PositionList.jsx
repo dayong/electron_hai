@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { SearchOutlined } from '@ant-design/icons';
 import axios from "axios";
 
-import map from '../../config'
+import {map, base_url} from '../../config'
 
 function App() {
     const [list, setList] = useState([]);
@@ -124,7 +124,7 @@ function App() {
         
         try {
             let res = await axios.get(
-                `${map.base_url}/member/find_position`,
+                `${base_url}/member/find_position`,
                 {
                     params,  // 查询参数放在这里
                     headers: {

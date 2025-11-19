@@ -16,9 +16,18 @@ export default function Login() {
     let { email_or_username, password } = values;
 
     try{
-        let res = await axios.post(`${base_url}/member/login`, { email_or_username, password });
 
-        console.log(19, res);
+        // POST 请求
+        const res = await window.api.httpRequest({
+            method: 'POST',
+            url: `${base_url}/member/login`, // 会自动拼接 BASE_URL
+            data: { email_or_username, password }
+        });
+
+
+        // let res = await axios.post(`${base_url}/member/login`, { email_or_username, password });
+
+        console.log(30, res);
 
         if(res.data.message == '登录成功'){
             localStorage.setItem('token', res.data.hai_access_token)

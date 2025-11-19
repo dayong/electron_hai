@@ -57,8 +57,15 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const res = await axios.post(`${base_url}/member/send_code`, {
-        email: email
+    //   const res = await axios.post(`${base_url}/member/send_code`, {
+    //     email: email
+    //     });
+
+        // POST 请求
+        const res = await window.api.httpRequest({
+            method: 'POST',
+            url: `${base_url}/member/send_code`, // 会自动拼接 BASE_URL
+            data: {  email: email }
         });
 
       console.log('res', res)
@@ -104,7 +111,14 @@ export default function Register() {
     
 
     try{
-        let res = await axios.post(`${base_url}/member/verify_code_and_register`, { email, code, password });
+        // let res = await axios.post(`${base_url}/member/verify_code_and_register`, { email, code, password });
+
+        // POST 请求
+        let res = await window.api.httpRequest({
+            method: 'POST',
+            url: `${base_url}/member/verify_code_and_register`, // 会自动拼接 BASE_URL
+            data: { email, code, password }
+        });
 
         console.log(81, res);
 
@@ -139,14 +153,20 @@ export default function Register() {
     let { password, confirm } = values;
 
     try{
-        let res = await axios.post(`${base_url}/member/electron_register`, {email, password, confirm });
+        // let res = await axios.post(`${base_url}/member/electron_register`, {email, password, confirm });
+
+        let res = await window.api.httpRequest({
+            method: 'POST',
+            url: `${base_url}/member/electron_register`, // 会自动拼接 BASE_URL
+            data: {email, password, confirm }
+        });
 
         console.log(101, res);
 
-        // message.success(res.data.message);
-        // message.success("注册成功！");
+        message.success(res.data.message);
+        message.success("注册成功！");
 
-        //navigate("/login");
+        navigate("/login");
 
     }catch(e){
         console.log(129, e)

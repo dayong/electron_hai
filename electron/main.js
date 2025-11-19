@@ -20,7 +20,7 @@ const {
     close
 } = require("./doubao");
 
-const {LocalServer} = require("./LocalServer");
+// const {LocalServer} = require("./LocalServer");
 
 const { case_parsed_resume_json_handle } = require("./handles");
 
@@ -39,7 +39,7 @@ process.on("uncaughtException", (err) => {
 
 
 //创建服务实例
-const localServer = new LocalServer();
+// const localServer = new LocalServer();
    
 
 var win;
@@ -60,14 +60,14 @@ function createWindow() {
     });
 
     // 启动本地服务
-    localServer.startServer().then(port => {
-        console.log('本地 HTTP 服务已启动，端口:', port);
+    // localServer.startServer().then(port => {
+    //     console.log('本地 HTTP 服务已启动，端口:', port);
         
-        // 通知渲染进程
-        // mainWindow.webContents.send('server-started', port);
-    }).catch(err => {
-        console.error('启动服务失败:', err);
-    });
+    //     // 通知渲染进程
+    //     // mainWindow.webContents.send('server-started', port);
+    // }).catch(err => {
+    //     console.error('启动服务失败:', err);
+    // });
 
     win.setBounds({ x: 0, y: 0, width, height });
 
@@ -314,34 +314,39 @@ ipcMain.handle("del_resume", async (event, id) => {
 });
 
 
-//   ipcMain.handle("parse-resume", async (event) => {
-//         const { canceled, filePaths } = await dialog.showOpenDialog({
-//             filters: [{ name: "file", extensions: ["pdf", "docx"] }],
-//             properties: ["openFile"],
-//         });
-//         if (canceled) return null;
+ipcMain.handle('http-request', async (event, options) => {
+    const { method = 'GET', url, data = {}, headers = {} } = options;
 
-//         const filePath = filePaths[0];
+    console.log(320, method, url, data)
+  
+    try {
+      const res = await axios({
+        method,
+        url: url.startsWith('http') ? url : `${BASE_URL}${url}`,
+        data,
+        headers: {
+          ...headers,
+        //   ...(globalToken ? { Authorization: `Bearer ${globalToken}` } : {})
+        },
+        timeout: 10000 // 可调超时
+      });
 
-//     const form = new FormData();
+      console.log('main', res)
+    //   { success: true, data: res.data }
+  
+      return { success: true, data: res.data }
+    } catch (err) {
+      console.log('HTTP request error:', err);
+    //   {
+    //     success: false,
+    //     error: err.message,
+    //     status: err.response ? true : false,
+    //     data: err.response
+    //   }
+      return {status:0, msg:err.message, url}
+    }
+  });
 
-//     form.append("file", fs.createReadStream(filePath));
-
-//     const res = await axios.post("http://127.0.0.1:8000/resume/parse_resume_from_electron", form, {
-//       headers: form.getHeaders(),
-//     });
-
-//     // console.log(98, res.data)
-
-//     if(res && res.data){
-//         let text = res.data.text;
-//         // 解析简历
-//         resume_html = await doubao_parser(text)
-//         console.log(resume_html)
-//     }
-
-//     return resume_html
-//   });
 
 const userDataPath = process.env.NODE_ENV === "development"
   ? path.join(__dirname, 'myProfile')

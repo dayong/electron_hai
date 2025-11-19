@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { SearchOutlined } from '@ant-design/icons';
 import axios from "axios";
 
-import map from '../../config'
+import {map, base_url} from '../../config'
 
 function App() {
     const [list, setList] = useState([]);

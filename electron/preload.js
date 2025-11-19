@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("api", {
     getResumes: (params) => ipcRenderer.invoke("get-resumes", params),
     delResume: (id) => ipcRenderer.invoke("del_resume", id),
     refreshQrcode: () => ipcRenderer.invoke("refresh-qrcode"),
+    httpRequest: (options) => ipcRenderer.invoke('http-request', options),
     
       // 你也可以暴露一个发送消息到主进程的方法（双向通信）
     sendToMain: (message) => {

@@ -377,9 +377,9 @@ function App() {
                         title={<div><a href="">{'职位:' + item.name+' | 需求人数: '+item.count +' | '+ item.company}</a><br />
                         
                         {item.isExceting ? '当前简历已加入' : (<Button type="primary" size="small" onClick={() => intoItem(item)}>
-                        ->简历加入到该项目
+                        --简历加入到该项目
                         </Button>)
-                    }
+                        }
                       
                       </div>}
                         description=""

@@ -21,6 +21,8 @@ import { Layout, Menu, theme, Button } from 'antd';
 
 import axios from "axios";
 
+import {base_url} from '../../config'
+
 const { Header, Content, Footer, Sider } = Layout;
 
 const siderStyle = {
@@ -92,7 +94,7 @@ const MainLayout = () => {
         //获取用户信息
         const fetchUser = async () => {
             try {
-                let res = await axios.get("http://127.0.0.1:8000/member/find_member",{
+                let res = await axios.get(`${base_url}/member/find_member`,{
                     headers: {
                         'Authorization': `${token}`
                     }
