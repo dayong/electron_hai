@@ -1,9 +1,13 @@
-const { app, BrowserWindow,globalShortcut, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow,globalShortcut, ipcMain, dialog, screen } = require("electron");
 const path = require("path");
 
 const axios = require("axios");
 const FormData = require("form-data");
+// const fs = require("fs/promises");
+
 const fs = require("fs");
+
+// const pfs = require("fs/promises");
 
 const { add_task, insertMany, get_resumes, start_task ,del_resume} = require("./db");
 
@@ -15,6 +19,8 @@ const {
     doubao_get_login_status,
     close
 } = require("./doubao");
+
+// const {LocalServer} = require("./LocalServer");
 
 const { case_parsed_resume_json_handle } = require("./handles");
 
@@ -30,20 +36,43 @@ process.on("unhandledRejection", (reason, promise) => {
 process.on("uncaughtException", (err) => {
     console.error("❌ 未捕获的异常:", err);
   });
+
+
+//创建服务实例
+// const localServer = new LocalServer();
    
 
 var win;
 function createWindow() {
+
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
     win = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        width,
+        height,
+        x: 0,
+        y: 0,
+        // frame: false,   // 无边框
+        fullscreen: false,
         webPreferences: {
             preload: path.join(__dirname, "preload.js")
         }
     });
 
+    // 启动本地服务
+    // localServer.startServer().then(port => {
+    //     console.log('本地 HTTP 服务已启动，端口:', port);
+        
+    //     // 通知渲染进程
+    //     // mainWindow.webContents.send('server-started', port);
+    // }).catch(err => {
+    //     console.error('启动服务失败:', err);
+    // });
+
+    win.setBounds({ x: 0, y: 0, width, height });
+
     if (process.env.NODE_ENV === "development") {
-        win.loadURL("http://localhost:5173");
+        win.loadURL("http://127.0.0.1:5173");
 
         // win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
         
@@ -86,14 +115,17 @@ function createWindow() {
                 //拿到网络状态后，自动同步 ，断点续传
                 case "case_navigator_online":
                     console.log('网络状态',message.data);
-                    start_task(message.data)
+                    start_task(message.data, message.token)
                     break;
                 case "case_login_success":
-                    console.log("登录成功");
-                    // if(obj && obj.timer){
-                    //     clearInterval(obj.timer)
-                    // }
-                    // await close();
+                    console.log("登录成功",message, message.data);
+                    if(obj && obj.timer){
+                        clearInterval(obj.timer)
+                        obj.timer = null;
+                        obj = {};
+                    }
+                    win.webContents.send("from_main_set_progress", {progress:100})
+                    await close();
                     break;
             }
         }
@@ -103,14 +135,14 @@ function createWindow() {
 app.whenReady().then(() => {
     createWindow();
 
-    setInterval(function() {
-        if (win) {
-            win.webContents.send(
-                "from_main_navigator_online",
-                {}
-            );
-        }
-    }, 50000);
+    // setInterval(function() {
+    //     if (win) {
+    //         win.webContents.send(
+    //             "from_main_navigator_online",
+    //             {}
+    //         );
+    //     }
+    // }, 500000);
 
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -119,7 +151,7 @@ app.whenReady().then(() => {
 
 
 
-// 定义方法
+// 登录状态
 
 var obj = {};
 
@@ -143,7 +175,17 @@ ipcMain.handle("refresh-qrcode", async () => {
     return result;
 });
 
-ipcMain.handle("select-pdf", async () => {
+// 读取 PDF 文件为 base64
+ipcMain.handle('read-pdf-file', async (event, filePath) => {
+    try {
+      const data = await fs.readFile(filePath);
+      return data.toString('base64')
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  });
+
+ipcMain.handle("select-pdf", async (event, token) => {
     let result = null;
     const { canceled, filePaths } = await dialog.showOpenDialog({
         filters: [{ name: "file", extensions: ["pdf", "docx"] }],
@@ -156,54 +198,68 @@ ipcMain.handle("select-pdf", async () => {
 
     form.append("file", fs.createReadStream(filePath));
 
+<<<<<<< HEAD
     win.webContents.send("from_main_log", {'adfadsfasdf':process.execPath})
+=======
+    win.webContents.send("from_main_set_progress", {progress:0})
+>>>>>>> dev
 
     // 发到服务提取text
     const res = await axios.post(
-        `${base_url}/resume/parse_resume_from_electron`,
+        `${base_url}/resume/parse_resume_from_electron222`,
         form,
         {
-            headers: {...form.getHeaders(),}
+            headers: {
+                'Authorization': `${token}`,
+                ...form.getHeaders()
+            }
         }
     );
 
-        
+    // win.webContents.send("from_main_log", res.data)
 
-    win.webContents.send("from_main_log", res.data)
-
-    console.log('发到服务提取text', res);
+    console.log('发到服务提取text', res.data.name);
 
     
     if (res && res.data) {
-        let { text, name, cell } = res.data;
+        let { text, name, cell,email } = res.data;
+
+
+        obj.text = text;
 
 
         // return;
 
         // 解析简历  
-        /*
-        result = {
-            status: 2,    //2 是拿到了解析后的html
-            data: reply   //html 文本
-        }
-        */
-       win.webContents.send("from_main_log", {'msg':"doubao_parser"})
+        
+        // result = {
+        //     status: 2,    //2 是拿到了解析后的html
+        //     data: reply   //html 文本
+        // }
+
+    //    win.webContents.send("from_main_log", {'msg':"doubao_parser"})
 
        try{
-        result = await doubao_parser(text);
+        result = await doubao_parser(text, win);
        }catch(e){
-        win.webContents.send("from_main_log", {'msg':"doubao_parser error"})
+        // win.webContents.send("from_main_log", {'msg':"doubao_parser error"})
        }
 
-       win.webContents.send("from_main_log", {'msg':"doubao_parser result", 'result':result})
+    //    win.webContents.send("from_main_log", {'msg':"doubao_parser result", 'result':result})
+
+       console.log('doubao_parser解析结果', result)
         
 
-        doubao_status(win);
+        if(result.status == 1){
+            doubao_status(win);
+        }
+        
         
         console.log("解析简历=================>>>>>>>>", result);
         if(result.data && result.status && result.status == 2){
             result.name = name
             result.cell = cell
+            result.email = email
         }
         
         console.log("解析简历=================>>>>>>>>", result);
@@ -263,34 +319,39 @@ ipcMain.handle("del_resume", async (event, id) => {
 });
 
 
-//   ipcMain.handle("parse-resume", async (event) => {
-//         const { canceled, filePaths } = await dialog.showOpenDialog({
-//             filters: [{ name: "file", extensions: ["pdf", "docx"] }],
-//             properties: ["openFile"],
-//         });
-//         if (canceled) return null;
+ipcMain.handle('http-request', async (event, options) => {
+    const { method = 'GET', url, data = {}, headers = {} } = options;
 
-//         const filePath = filePaths[0];
+    console.log(320, method, url, data)
+  
+    try {
+      const res = await axios({
+        method,
+        url: url.startsWith('http') ? url : `${BASE_URL}${url}`,
+        data,
+        headers: {
+          ...headers,
+        //   ...(globalToken ? { Authorization: `Bearer ${globalToken}` } : {})
+        },
+        timeout: 10000 // 可调超时
+      });
 
-//     const form = new FormData();
+      console.log('main', res)
+    //   { success: true, data: res.data }
+  
+      return { success: true, data: res.data }
+    } catch (err) {
+      console.log('HTTP request error:', err);
+    //   {
+    //     success: false,
+    //     error: err.message,
+    //     status: err.response ? true : false,
+    //     data: err.response
+    //   }
+      return {status:0, msg:err.message, url}
+    }
+  });
 
-//     form.append("file", fs.createReadStream(filePath));
-
-//     const res = await axios.post("http://127.0.0.1:8000/resume/parse_resume_from_electron", form, {
-//       headers: form.getHeaders(),
-//     });
-
-//     // console.log(98, res.data)
-
-//     if(res && res.data){
-//         let text = res.data.text;
-//         // 解析简历
-//         resume_html = await doubao_parser(text)
-//         console.log(resume_html)
-//     }
-
-//     return resume_html
-//   });
 
 const userDataPath = process.env.NODE_ENV === "development"
   ? path.join(__dirname, 'myProfile')
