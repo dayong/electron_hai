@@ -20,6 +20,8 @@ import { useNavigate, Link } from "react-router-dom";
 
 import axios from "axios";
 
+import {base_url} from '../config'
+
 const { Title } = Typography;
 
 export default function Register() {
@@ -55,7 +57,7 @@ export default function Register() {
     try {
       setLoading(true);
 
-      const res = await axios.post("http://127.0.0.1:8000/member/send_code", {
+      const res = await axios.post(`${base_url}/member/send_code`, {
         email: email
         });
 
@@ -102,7 +104,7 @@ export default function Register() {
     
 
     try{
-        let res = await axios.post("http://127.0.0.1:8000/member/verify_code_and_register", { email, code, password });
+        let res = await axios.post(`${base_url}/member/verify_code_and_register`, { email, code, password });
 
         console.log(81, res);
 
@@ -137,7 +139,7 @@ export default function Register() {
     let { password, confirm } = values;
 
     try{
-        let res = await axios.post("http://127.0.0.1:8000/member/electron_register", {email, password, confirm });
+        let res = await axios.post(`${base_url}/member/electron_register`, {email, password, confirm });
 
         console.log(101, res);
 

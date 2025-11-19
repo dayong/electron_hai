@@ -106,7 +106,7 @@ function App() {
         
         try {
             let res = await axios.get(
-                "http://127.0.0.1:8000/member/find_company",
+                `${base_url}/member/find_company`,
                 {
                     params,  // 查询参数放在这里
                     headers: {

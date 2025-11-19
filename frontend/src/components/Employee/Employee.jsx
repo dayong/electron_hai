@@ -3,6 +3,7 @@ import { Space, Table, Input, Button, Popconfirm, message, Select } from 'antd';
 import { useNavigate, Link } from "react-router-dom";
 import { SearchOutlined } from '@ant-design/icons';
 import axios from "axios";
+import {base_url} from "../../config"
 
 function App() {
     const [list, setList] = useState([]);
@@ -85,7 +86,7 @@ function App() {
         
         try {
             let res = await axios.get(
-                "http://127.0.0.1:8000/member/find_employee",
+                `${base_url}/member/find_employee`,
                 {
                     params,  // 查询参数放在这里
                     headers: {

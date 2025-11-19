@@ -3,6 +3,8 @@ import {Form, Input, Button,  Layout, Select } from "antd";
 
 import axios from "axios";
 
+import {base_url} from "../../config"
+
 const { Content } = Layout;
 
 
@@ -23,7 +25,7 @@ function App() {
         async function find_company(){
             try{
                 let res = await axios.get(
-                    "http://127.0.0.1:8000/member/find_company",
+                    `${base_url}/member/find_company`,
                     
                     {
                         params: {"author_id":1},
@@ -57,7 +59,7 @@ function App() {
         async function find_employee(){
             try{
                 let res = await axios.get(
-                    "http://127.0.0.1:8000/member/find_employee",
+                    `${base_url}/member/find_employee`,
                     
                     {
                         // params: {"author_id":1},
@@ -137,7 +139,7 @@ function App() {
 
         try{
             let res = await axios.post(
-                "http://127.0.0.1:8000/member/add_position",
+                `${base_url}/member/add_position`,
                 { name, company_id, jd, city, count, owner, jr, process },
                 {
                     headers: {

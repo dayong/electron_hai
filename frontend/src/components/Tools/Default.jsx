@@ -132,8 +132,14 @@ function App() {
 
 
     const handleParse = async () => {
+
+        const token = localStorage.getItem('token');
+            if (!token) {
+            navigate('/login');
+            return;
+            }
         // 
-        const result = await window.api.selectPdf();
+        const result = await window.api.selectPdf(token);
         
         if (result) {
 
@@ -163,9 +169,11 @@ function App() {
                     timer = null;
                 }
 
+                console.log(172, data)
+
                 let json_str = del_html(data);
 
-                console.log(165, json_str);
+                console.log(175, json_str);
 
                 let resume_json = JSON.parse(json_str);
 
@@ -211,14 +219,13 @@ function App() {
             </div>
 
             <Flex gap="small" wrap>
+                
+                <Button type="primary" onClick={handleParse}>
+                    生成简历报告
+                </Button>
+
                 <Button type="primary" onClick={handleUpload}>
                     上传单一简历
-                </Button>
-                <Button type="primary" onClick={handleParse}>
-                    解析 PDF
-                </Button>
-                <Button type="primary" >
-                    Dashed
                 </Button>
             </Flex>
 

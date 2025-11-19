@@ -170,7 +170,7 @@ async function doubao_parser(resume_text, parent) {
 
     let template = JSON.stringify(RESUME_JSON_TEMP);
 
-    let text = `请从下面简历文本内容中，按照模版 ${template} 简历JSON结构,返回结构化json。注意：1.如果模版中字段不够，请自行创建新字段。 2.如果模版中字段没有匹配到合适内容，也要返回这个字段,字段为空字符串。3.不需要创建英文字段(例如name:"张三",name_en:"zhang san")。4.在对话中返回json文本（不要返回让我下载的json文件）`
+    let text = `请从下面简历文本内容中，按照模版 ${template} 简历JSON结构,返回结构化json。注意：1.如果模版中字段不够，请自行创建新字段。 2.如果模版中字段没有匹配到合适内容，也要返回这个字段,字段为空字符串。3.不需要创建英文字段(例如name:"张三",name_en:"zhang san")。4.在对话中返回json文本（不要返回让我下载的json文件）。5.最后增加个解析完毕字段：parse_from:'doubao'`
   
     console.log('138==============')
 
@@ -228,11 +228,19 @@ async function doubao_parser(resume_text, parent) {
     console.log(193, f)
 
 
+    // const reply = await win.webContents.executeJavaScript(`(async function(){
+    //     let els = document.querySelectorAll('div[data-testid="message_text_content"][theme-mode]');
+    //     let len = els.length;
+    //     return els[len-1].innerHTML;
+    // })()`);
+
     const reply = await win.webContents.executeJavaScript(`(async function(){
-        let els = document.querySelectorAll('div[data-testid="message_text_content"][theme-mode]');
-        let len = els.length;
-        return els[len-1].innerHTML;
+        let list = document.querySelectorAll('div[data-testid="receive_message"]');
+        let len = list.length;
+        return list[len-1].innerHTML;
     })()`);
+
+    console.log(237, reply)
 
   
     browser_status = 2;
@@ -311,16 +319,21 @@ async function waitForElmCount(win) {
             var className_text;
 
             try{
-                className_text = await win.webContents.executeJavaScript(`(function(){
-                    let els = document.querySelectorAll('div[data-testid ="chat_input_local_break_button"]');
+                // className_text = await win.webContents.executeJavaScript(`(function(){
+                //     let els = document.querySelectorAll('div[data-testid ="chat_input_local_break_button"]');
 
-                    let final = '';
+                //     let final = '';
              
-                    if(els.length){
-                        final = els[0].className
-                    }
-                    return final
+                //     if(els.length){
+                //         final = els[0].className
+                //     }
+                //     return final
 
+                // })()`);
+
+                className_text = await win.webContents.executeJavaScript(`(function(){
+                    let r = /parse_from[^\u4e00-\u9fa5{}a-zA-Z]+"doubao/;
+                    return r.test(document.body.innerHTML) ? true : false;
                 })()`);
 
             }catch(err){
@@ -336,8 +349,9 @@ async function waitForElmCount(win) {
 
 
             // console.log(className_text, diff_time)
+            // if(className_text && /hidden/.test(className_text) && diff_time > 5){
 
-            if(className_text && /\!hidden/.test(className_text) && diff_time > 5){
+            if(className_text && diff_time > 5){
                 // console.log('命中',className_text, diff_time)
                 clearInterval(timer);
                 timer = null;

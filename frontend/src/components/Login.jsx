@@ -4,6 +4,8 @@ import { useNavigate, Link } from "react-router-dom";
 
 import axios from "axios";
 
+import {base_url} from '../config'
+
 const { Title } = Typography;
 
 export default function Login() {
@@ -14,7 +16,7 @@ export default function Login() {
     let { email_or_username, password } = values;
 
     try{
-        let res = await axios.post("http://127.0.0.1:8000/member/login", { email_or_username, password });
+        let res = await axios.post(`${base_url}/member/login`, { email_or_username, password });
 
         console.log(19, res);
 

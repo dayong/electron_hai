@@ -124,7 +124,7 @@ function App() {
         
         try {
             let res = await axios.get(
-                "http://127.0.0.1:8000/member/find_position",
+                `${map.base_url}/member/find_position`,
                 {
                     params,  // 查询参数放在这里
                     headers: {

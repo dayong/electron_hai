@@ -3,6 +3,8 @@ import { Space, Table, Input, Button, Popconfirm, message, Modal, Select, Radio,
 
 import { SearchOutlined } from '@ant-design/icons';
 
+import { base_url } from '../../config'
+
 import axios from "axios";
 
 
@@ -195,7 +197,7 @@ function App() {
         
         try {
             let res = await axios.get(
-                "http://127.0.0.1:8000/member/find_position",
+                `${base_url}/member/find_position`,
                 {
                     params: {
                         'use_owner_id': true
@@ -294,7 +296,7 @@ function App() {
         
         try {
             let res = await axios.post(
-                "http://127.0.0.1:8000/member/add_resume_to_company",
+                `${base_url}/member/add_resume_to_company`,
                 {item_id, resume_id},
                 {
                     headers: {

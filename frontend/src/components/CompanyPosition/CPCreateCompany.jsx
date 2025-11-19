@@ -5,6 +5,8 @@ const { TextArea } = Input;
 
 import axios from "axios";
 
+import {base_url} from '../../config'
+
 const { Content } = Layout;
 
 
@@ -39,7 +41,7 @@ function App() {
 
         try{
             let res = await axios.post(
-                "http://127.0.0.1:8000/member/add_company",
+                `${base_url}/member/add_company`,
                 { "category": category || 1, name, about, other, "level": level || 1, addr },
                 {
                     headers: {

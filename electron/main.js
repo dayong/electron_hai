@@ -3,7 +3,9 @@ const path = require("path");
 
 const axios = require("axios");
 const FormData = require("form-data");
-const fs = require("fs/promises");
+// const fs = require("fs/promises");
+
+const fs = require("fs");
 
 // const pfs = require("fs/promises");
 
@@ -132,14 +134,14 @@ function createWindow() {
 app.whenReady().then(() => {
     createWindow();
 
-    setInterval(function() {
-        if (win) {
-            win.webContents.send(
-                "from_main_navigator_online",
-                {}
-            );
-        }
-    }, 5000);
+    // setInterval(function() {
+    //     if (win) {
+    //         win.webContents.send(
+    //             "from_main_navigator_online",
+    //             {}
+    //         );
+    //     }
+    // }, 500000);
 
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -182,7 +184,7 @@ ipcMain.handle('read-pdf-file', async (event, filePath) => {
     }
   });
 
-ipcMain.handle("select-pdf", async () => {
+ipcMain.handle("select-pdf", async (event, token) => {
     let result = null;
     const { canceled, filePaths } = await dialog.showOpenDialog({
         filters: [{ name: "file", extensions: ["pdf", "docx"] }],
@@ -193,22 +195,25 @@ ipcMain.handle("select-pdf", async () => {
     const filePath = filePaths[0];
     const form = new FormData();
 
-    form.append("file", await fs.createReadStream(filePath));
+    form.append("file", fs.createReadStream(filePath));
 
     win.webContents.send("from_main_set_progress", {progress:0})
 
     // 发到服务提取text
     const res = await axios.post(
-        `${base_url}/resume/parse_resume_from_electron`,
+        `${base_url}/resume/parse_resume_from_electron222`,
         form,
         {
-            headers: {...form.getHeaders(),}
+            headers: {
+                'Authorization': `${token}`,
+                ...form.getHeaders()
+            }
         }
     );
 
     // win.webContents.send("from_main_log", res.data)
 
-    // console.log('发到服务提取text', res);
+    console.log('发到服务提取text', res.data.name);
 
     
     if (res && res.data) {

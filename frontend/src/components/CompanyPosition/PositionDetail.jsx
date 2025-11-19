@@ -6,7 +6,7 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 import { SearchOutlined } from '@ant-design/icons';
 import axios from "axios";
 
-import map from '../../config'
+import {base_url} from '../../config'
 
 const layout = {
     labelCol: { span: 8 },
@@ -90,7 +90,7 @@ function App() {
     
     try {
         let res = await axios.get(
-            "http://127.0.0.1:8000/member/find_one_position",
+            `${base_url}/member/find_one_position`,
             {
                 params,  // 查询参数放在这里
                 headers: {
@@ -126,7 +126,7 @@ function App() {
         console.log(131, resume)
         try{
             var resume_info = await axios.get(
-                "http://127.0.0.1:8000/member/find_one_resume",
+                `${base_url}/member/find_one_resume`,
                 {
                     params:{
                         '_id': resume.id
@@ -138,7 +138,7 @@ function App() {
             );
 
             var author_info = await axios.get(
-                "http://127.0.0.1:8000/member/find_one_author",
+                `${base_url}/member/find_one_author`,
                 {
                     params:{
                         '_id': resume.author_id
@@ -181,9 +181,6 @@ function App() {
   };
 
       useEffect(() => {
-        console.log(129, map)
-
-       
 
         fetchPosition({
             _id: positionID

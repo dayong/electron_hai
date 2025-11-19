@@ -1,3 +1,5 @@
+const base_url = process.env.NODE_ENV === "development" ? 'http://127.0.0.1:8000' : 'https://hds.sundayong.top'
+
 export default {
     category:{
         '1': '普通公司',
@@ -14,5 +16,6 @@ export default {
         'sh': '上海',
         'sz': '深圳',
         'gz': '广州'
-    }
+    }, 
+    "base_url":base_url
 }

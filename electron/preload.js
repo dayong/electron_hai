@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld("api", {
-    selectPdf: () => ipcRenderer.invoke("select-pdf"),
+    selectPdf: (token) => ipcRenderer.invoke("select-pdf", token),
     readPdfFile: (filePath) => ipcRenderer.invoke("read-pdf-file", filePath),
     selectPdfAndWord: () => ipcRenderer.invoke("select-pdf-and-word"),
     getResumes: (params) => ipcRenderer.invoke("get-resumes", params),
