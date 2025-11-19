@@ -198,11 +198,7 @@ ipcMain.handle("select-pdf", async (event, token) => {
 
     form.append("file", fs.createReadStream(filePath));
 
-<<<<<<< HEAD
-    win.webContents.send("from_main_log", {'adfadsfasdf':process.execPath})
-=======
     win.webContents.send("from_main_set_progress", {progress:0})
->>>>>>> dev
 
     // 发到服务提取text
     const res = await axios.post(
