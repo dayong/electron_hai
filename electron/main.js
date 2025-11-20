@@ -7,6 +7,11 @@ const FormData = require("form-data");
 
 const fs = require("fs");
 
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // const pfs = require("fs/promises");
 
 const { add_task, insertMany, get_resumes, start_task ,del_resume} = require("./db");
