@@ -59,7 +59,7 @@
       "!*.yml",
       "!*.yaml"
     ],
-    "asar": true,
+    "asar": false,
     "directories": {
       "buildResources": "assets",
       "output": "release"

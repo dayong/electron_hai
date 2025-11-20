@@ -79,7 +79,7 @@ function createWindow() {
         // win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
         
     } else {
-        const indexPath = path.join(process.resourcesPath, "dist/index.html");
+        const indexPath = path.join(process.resourcesPath, "dist", "index.html");
         win.loadFile(indexPath);
     }
 
