@@ -7,10 +7,7 @@ const FormData = require("form-data");
 
 const fs = require("fs");
 
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // const pfs = require("fs/promises");
 
@@ -82,7 +79,8 @@ function createWindow() {
         // win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
         
     } else {
-        win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
+        const indexPath = path.join(process.resourcesPath, "dist/index.html");
+        win.loadFile(indexPath);
     }
 
 

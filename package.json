@@ -67,8 +67,8 @@
     },
     "extraResources": [
         {
-          "from": "~/.cache/puppeteer/chrome/mac-140.0.7339.82/chrome-mac-x64/",
-          "to": "chromium"
+            "from": "frontend/dist",
+            "to": "dist"
         }
       ]
       
