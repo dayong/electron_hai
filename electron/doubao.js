@@ -80,6 +80,17 @@ async function doubao_parser(resume_text, parent) {
     win = win ? win : (await createCrawlerWindow(parent));
   const url = 'https://www.doubao.com/chat/';
 
+
+  win.on('close', (event) => {
+      
+    win = null;
+    parent.webContents.reload();
+
+    // 如果你想阻止关闭：
+    // event.preventDefault();
+        
+    });
+
   
 
 

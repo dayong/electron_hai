@@ -31,7 +31,7 @@ export default function Login() {
 
         if(res.data.message == '登录成功'){
             localStorage.setItem('token', res.data.hai_access_token)
-            navigate("/");
+            navigate("/tools");
         }
         
 

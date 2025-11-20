@@ -28,21 +28,22 @@ const App = () => {
 
         {/* 后台主布局（含左侧菜单） */}
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
+            <Route index element={<Home />} />
+            <Route path="/tools" element={<Tools />} />       
 
-          <Route path="/employee" element={<Employee />} />
-          <Route path="/create_employee" element={<EmployeeCreate />} />
+            <Route path="/employee" element={<Employee />} />
+            <Route path="/create_employee" element={<EmployeeCreate />} />
 
-          <Route path="/resume" element={<ResumeList />} />
+            <Route path="/resume" element={<ResumeList />} />
 
-          <Route path="/company_position" element={<CompanyPosition />} />
-          <Route path="/position_list" element={<PositionList />} />
-          <Route path="/position_detail/:positionID" element={<PositionDetail />} />
-          <Route path="/cp_create_company" element={<CPCreateCompany />} />
-          <Route path="/cp_create_position" element={<CPCreatePosition />} />
+            <Route path="/company_position" element={<CompanyPosition />} />
+            <Route path="/position_list" element={<PositionList />} />
+            <Route path="/position_detail/:positionID" element={<PositionDetail />} />
+            <Route path="/cp_create_company" element={<CPCreateCompany />} />
+            <Route path="/cp_create_position" element={<CPCreatePosition />} />
           
-          <Route path="/tools" element={<Tools />} />
-          <Route path="/setup" element={<Setup />} />
+          
+            <Route path="/setup" element={<Setup />} />
         </Route>
       </Routes>
   );

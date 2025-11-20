@@ -22,14 +22,19 @@ function App() {
 
 
     useEffect(() => {
+        let path = localStorage.getItem('path');
+        path && setJsonStr(path);
         const parsed_resume_handleStatus = (data) => {
             console.log("收到主进程简历解析:", data);
             // setJsonStr(JSON.stringify(data, null, 2));
             if(data && data.success){
                 console.log('解析后存储路径',data.path);
 
+                let time = new Date()
 
-                setJsonStr(data.path)
+                localStorage.setItem('path', `${data.path}-${time.toLocaleString()}`)
+
+                setJsonStr(`${data.path}-${time.toLocaleString()}`)
 
                 //关闭puppeeter
                 window.api.send("message-to-main", {data:true, case: 'case_close_puppeteer'});

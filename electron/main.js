@@ -74,13 +74,7 @@ function createWindow() {
     win.setBounds({ x: 0, y: 0, width, height });
 
     if (process.env.NODE_ENV === "development") {
-        // win.loadURL("http://127.0.0.1:5173");
-
-        // win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
-
-        const indexPath = path.join(__dirname, "../frontend/dist/index.html");
-        win.loadFile(indexPath);
-        
+        win.loadURL("http://127.0.0.1:5173");  
     } else {
         const indexPath = path.join(process.resourcesPath, "dist", "index.html");
         win.loadFile(indexPath);
@@ -244,6 +238,7 @@ ipcMain.handle("select-pdf", async (event, token) => {
        try{
         result = await doubao_parser(text, win);
        }catch(e){
+            console.log(241, e)
         // win.webContents.send("from_main_log", {'msg':"doubao_parser error"})
        }
 
@@ -252,13 +247,16 @@ ipcMain.handle("select-pdf", async (event, token) => {
        console.log('doubao_parser解析结果', result)
         
 
-        if(result.status == 1){
+        if(result && result.status == 1){
             doubao_status(win);
+        }else{
+            //刷新
+            
         }
         
         
         console.log("解析简历=================>>>>>>>>", result);
-        if(result.data && result.status && result.status == 2){
+        if(result && result.data && result.status && result.status == 2){
             result.name = name
             result.cell = cell
             result.email = email
