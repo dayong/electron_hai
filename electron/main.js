@@ -74,9 +74,12 @@ function createWindow() {
     win.setBounds({ x: 0, y: 0, width, height });
 
     if (process.env.NODE_ENV === "development") {
-        win.loadURL("http://127.0.0.1:5173");
+        // win.loadURL("http://127.0.0.1:5173");
 
         // win.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
+
+        const indexPath = path.join(__dirname, "../frontend/dist/index.html");
+        win.loadFile(indexPath);
         
     } else {
         const indexPath = path.join(process.resourcesPath, "dist", "index.html");
