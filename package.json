@@ -45,7 +45,6 @@
     },
     "files": [
       "electron/**/*",
-      "frontend/dist/**/*",
       "package.json",
       "!electron/myProfile",
       "!node_modules/*/{test,__tests__,tests}/",
