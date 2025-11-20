@@ -23,6 +23,14 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+      
+        # 安装 frontend 依赖
+      - name: Install frontend dependencies
+        run: npm install --prefix frontend
+
+       # 构建 frontend
+      - name: Build frontend
+        run: npm run build --prefix frontend 
 
       - name: Build Windows exe
         run: npm run build:win
