@@ -189,7 +189,12 @@ function App() {
         {'value':'bj','label':'北京'},
         {'value':'sh','label':'上海'},
         {'value':'sz','label':'深圳'},
-        {'value':'gz','label':'广州'}
+        {'value':'gz','label':'广州'},
+        {'value':'xa','label':'西安'},
+        {'value':'tj','label':'天津'},
+        {'value':'hz','label':'杭州'},
+        {'value':'wh','label':'武汉'},
+        {'value':'other','label':'其它'}
     ]
 
 
