@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld("api", {
     selectPdfAndWord: () => ipcRenderer.invoke("select-pdf-and-word"),
     getResumes: (params) => ipcRenderer.invoke("get-resumes", params),
     delResume: (id) => ipcRenderer.invoke("del_resume", id),
+    delPosition: (id) => ipcRenderer.invoke("del_position", id),
     refreshQrcode: () => ipcRenderer.invoke("refresh-qrcode"),
     httpRequest: (options) => ipcRenderer.invoke('http-request', options),
     

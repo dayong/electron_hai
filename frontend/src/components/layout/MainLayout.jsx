@@ -213,7 +213,7 @@ const MainLayout = () => {
               height:'100vh'
             }}
           >
-              <Outlet />
+              <Outlet context={{ currentUser: email }} />
               
           </div>
         </Content>

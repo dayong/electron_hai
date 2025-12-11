@@ -7,8 +7,6 @@ const FormData = require("form-data");
 
 const fs = require("fs");
 
-
-
 // const pfs = require("fs/promises");
 
 const { add_task, insertMany, get_resumes, start_task ,del_resume} = require("./db");
@@ -135,14 +133,14 @@ function createWindow() {
 app.whenReady().then(() => {
     createWindow();
 
-    // setInterval(function() {
-    //     if (win) {
-    //         win.webContents.send(
-    //             "from_main_navigator_online",
-    //             {}
-    //         );
-    //     }
-    // }, 500000);
+    setInterval(function() {
+        if (win) {
+            win.webContents.send(
+                "from_main_navigator_online",
+                {}
+            );
+        }
+    }, 5000);
 
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -177,9 +175,10 @@ ipcMain.handle("refresh-qrcode", async () => {
 
 // 读取 PDF 文件为 base64
 ipcMain.handle('read-pdf-file', async (event, filePath) => {
+    console.log('main: read-pdf-file')
     try {
-      const data = await fs.readFile(filePath);
-      return data.toString('base64')
+      const buffer = fs.readFileSync(filePath);
+      return buffer.toString('base64')
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -313,8 +312,14 @@ ipcMain.handle("get-resumes", async (event, params) => {
 
 //删除简历   
 ipcMain.handle("del_resume", async (event, id) => {
-
     console.log('del_resume收到的参数:', id);
+    return del_resume(id)
+});
+
+//删除职位  
+ipcMain.handle("del_position", async (event, id) => {
+    console.log('del_position收到的参数:', id);
+    
     return del_resume(id)
 });
 

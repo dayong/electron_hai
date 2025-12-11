@@ -1,6 +1,8 @@
 import React, { useState, useEffect }  from 'react';
 import { Space, Table, Input, Button, Popconfirm, message, Modal, Select, Radio, Grid, Col, Row, List } from 'antd';
 
+import { useOutletContext } from 'react-router-dom';
+
 import { SearchOutlined } from '@ant-design/icons';
 
 import { base_url } from '../../config'
@@ -27,6 +29,8 @@ function App() {
         pageSize: 10,
         total: 0,
       });
+
+    const { currentUser } = useOutletContext();  
 
     const [filters, setFilters] = useState({});
 
@@ -245,13 +249,13 @@ function App() {
             // console.log(1751, record)
             const {server_id }= record;
 
-            console.log(188, server_id)
+            console.log(188, server_id, record.file_path)
 
             set_resume_id(server_id);
 
             // var result = await window.api.readPdfFile(record.file_path);
             const base64Data = await window.api.readPdfFile(record.file_path);
-            // console.log(180, base64Data)
+            console.log(180, base64Data)
             const blob = new Blob([Uint8Array.from(atob(base64Data), c => c.charCodeAt(0))], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
             // document.querySelector("#pdfViewer").src = url;
